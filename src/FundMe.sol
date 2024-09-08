@@ -4,20 +4,18 @@ pragma solidity 0.8.19;
 import {AggregatorV3Interface} from "@chainlink/contracts/src/v0.8/interfaces/AggregatorV3Interface.sol";
 import {PriceConverter} from "./PriceConverter.sol";
 
-
 error NotOwner();
-    // Functions Order:
-    //// constructor
-    //// receive
-    //// fallback
-    //// external
-    //// public
-    //// internal
-    //// private
-    //// view / pure
+// Functions Order:
+//// constructor
+//// receive
+//// fallback
+//// external
+//// public
+//// internal
+//// private
+//// view / pure
 
 contract FundMe {
-
     using PriceConverter for uint256;
 
     mapping(address => uint256) private s_addressToAmountFunded;
@@ -27,7 +25,7 @@ contract FundMe {
     address private immutable i_owner;
     uint256 public constant MINIMUM_USD = 5 * 10 ** 18;
     AggregatorV3Interface private s_priceFeed;
-    
+
     constructor(address priceFeed) {
         i_owner = msg.sender;
         s_priceFeed = AggregatorV3Interface(priceFeed);
@@ -39,23 +37,23 @@ contract FundMe {
         s_addressToAmountFunded[msg.sender] += msg.value;
         s_funders.push(msg.sender);
     }
-  /*  function testFund() public payable {
+    /*  function testFund() public payable {
         addressToAmountFunded[msg.sender] += msg.value;
         funders.push(msg.sender);
     } */
-    
+
     modifier onlyOwner() {
-         require(msg.sender == getOwner(), "not the owner");
-     //   if (msg.sender != i_owner) revert NotOwner();
+        require(msg.sender == getOwner(), "not the owner");
+        //   if (msg.sender != i_owner) revert NotOwner();
         _;
     }
-    
+
     function withdraw() public onlyOwner {
         for (uint256 funderIndex = 0; funderIndex < s_funders.length; funderIndex++) {
             address funder = s_funders[funderIndex];
             s_addressToAmountFunded[funder] = 0;
         }
-        
+
         s_funders = new address[](0);
         // Transfer vs call vs Send
         // payable(msg.sender).transfer(address(this).balance);
@@ -65,7 +63,7 @@ contract FundMe {
 
     function cheaperWithdraw() public onlyOwner {
         uint256 fundersLength = s_funders.length;
-        for(uint256 funderIndex = 0; funderIndex < fundersLength; funderIndex++) {
+        for (uint256 funderIndex = 0; funderIndex < fundersLength; funderIndex++) {
             address funder = s_funders[funderIndex];
             s_addressToAmountFunded[funder] = 0;
         }
@@ -77,41 +75,39 @@ contract FundMe {
     // Explainer from: https://solidity-by-example.org/fallback/
     // Ether is sent to contract
     //      is msg.data empty?
-    //          /   \ 
+    //          /   \
     //         yes  no
     //         /     \
-    //    receive()?  fallback() 
-    //     /   \ 
+    //    receive()?  fallback()
+    //     /   \
     //   yes   no
     //  /        \
     //receive()  fallback()
 
-
-    /** Getter Functions */
-   /*  function getPriceFeed() public view returns (AggregatorV3Interface) {
+    /**
+     * Getter Functions
+     */
+    /*  function getPriceFeed() public view returns (AggregatorV3Interface) {
         return s_priceFeed;
     }*/
-        
-    
+
     function getAddressToAmountFunded(address fundingAddress) public view returns (uint256) {
         return s_addressToAmountFunded[fundingAddress];
     }
 
     function getFunder(uint256 index) public view returns (address) {
         return s_funders[index];
-
     }
-    
+
     function getOwner() public view returns (address) {
         return i_owner;
-    }  
-    
-    function getVersion() public view returns (uint256){
+    }
+
+    function getVersion() public view returns (uint256) {
         return s_priceFeed.version();
     }
-    
+
     function getPriceFeed() public view returns (AggregatorV3Interface) {
         return s_priceFeed;
     }
-
 }

@@ -12,6 +12,8 @@ out/
 docs/
 zkout/
 lib
+-h
+node_modules
 
 
 # Dotenv file

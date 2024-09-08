@@ -9,6 +9,7 @@ import {MockV3Aggregator} from "../test/mock/MockV3Aggregator.t.sol";
 
 contract DeployFundMe is Script {
     MockV3Aggregator mockV3Aggregator;
+
     function run() external returns (FundMe) {
         // The next line runs before the vm.startBroadcast() is called
         // This will not be deployed because the `real` signed txs are happening
@@ -17,9 +18,8 @@ contract DeployFundMe is Script {
         address ethUsdPriceFeed = helperConfig.activeNetworkConfig();
 
         vm.startBroadcast();
-       FundMe fundMe = new FundMe(address(0x694AA1769357215DE4FAC081bf1f309aDC325306));
+        FundMe fundMe = new FundMe(address(0x694AA1769357215DE4FAC081bf1f309aDC325306));
         vm.stopBroadcast();
         return fundMe;
-    }  
-
+    }
 }
